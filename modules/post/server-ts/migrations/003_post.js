@@ -5,6 +5,10 @@ exports.up = function(knex, Promise) {
         table.increments();
         table.string('title');
         table.string('content');
+        table
+          .integer('fileId')
+          .notNull()
+          .defaultTo(0);
         table.timestamps(false, true);
       })
       .createTable('comment', table => {
