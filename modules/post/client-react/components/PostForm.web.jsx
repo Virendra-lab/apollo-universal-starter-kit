@@ -5,13 +5,19 @@ import { translate } from '@gqlapp/i18n-client-react';
 import { FieldAdapter as Field } from '@gqlapp/forms-client-react';
 import { required, validate } from '@gqlapp/validation-common-react';
 import { Form, RenderField, Button } from '@gqlapp/look-client-react';
+import Upload from '../containers/Upload';
 
 const postFormSchema = {
   title: [required],
-  content: [required]
+  content: [required],
+  fileId: []
 };
 
 const PostForm = ({ values, handleSubmit, submitting, t }) => {
+  const setupFileId = id => {
+    values.fileId = id;
+  };
+
   return (
     <Form name="post" onSubmit={handleSubmit}>
       <Field name="title" component={RenderField} type="text" label={t('post.field.title')} value={values.title} />
@@ -22,6 +28,9 @@ const PostForm = ({ values, handleSubmit, submitting, t }) => {
         label={t('post.field.content')}
         value={values.content}
       />
+      <div className="p-3">
+        <Upload setupFileId={setupFileId} filePath={values.fileId} />
+      </div>
       <Button color="primary" type="submit" disabled={submitting}>
         {t('post.btn.submit')}
       </Button>
@@ -41,9 +50,12 @@ PostForm.propTypes = {
 const PostFormWithFormik = withFormik({
   mapPropsToValues: props => ({
     title: props.post && props.post.title,
-    content: props.post && props.post.content
+    content: props.post && props.post.content,
+    fileId: props.post && props.post.fileId
   }),
+
   validate: values => validate(values, postFormSchema),
+
   handleSubmit(
     values,
     {
@@ -52,6 +64,7 @@ const PostFormWithFormik = withFormik({
   ) {
     onSubmit(values);
   },
+
   enableReinitialize: true,
   displayName: 'PostForm' // helps with React DevTools
 });

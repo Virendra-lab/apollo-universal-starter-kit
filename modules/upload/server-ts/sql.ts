@@ -1,4 +1,4 @@
-import { knex } from '@gqlapp/database-server-ts';
+import { knex, returnId } from '@gqlapp/database-server-ts';
 
 interface File {
   name: string;
@@ -19,8 +19,16 @@ export default class Upload {
       .first();
   }
 
+  public getFileInfo(id: number) {
+    return knex
+      .select('id', 'name', 'size', 'path')
+      .from('upload')
+      .where('id', '=', id)
+      .first();
+  }
+
   public saveFiles(files: [File]) {
-    return knex('upload').insert(files);
+    return returnId(knex('upload').insert(files));
   }
 
   public deleteFile(id: number) {
